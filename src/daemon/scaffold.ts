@@ -1,5 +1,5 @@
-import { mkdirSync, writeFileSync, rmSync, readFileSync, existsSync } from 'node:fs';
-import { join, basename } from 'node:path';
+import { mkdirSync, writeFileSync, rmSync, readFileSync, existsSync, readdirSync } from 'node:fs';
+import { join, basename, relative } from 'node:path';
 import { WIKIS_DIR } from '../lib/constants.js';
 
 const DEFAULT_CLAUDE_MD = `# Wiki Agent — Conventions
@@ -133,6 +133,61 @@ export class WikiScaffold {
       .split('\n')
       .map(l => l.trim())
       .filter(l => l && !l.startsWith('#'));
+  }
+
+  /**
+   * List files in a wiki's wiki/ directory.
+   * Returns an array of { path, type } entries relative to wiki/.
+   * If prefix is given, only lists entries under that subdirectory.
+   */
+  listWikiFiles(wikiId: string, prefix: string = ''): Array<{ path: string; type: 'file' | 'directory' }> {
+    const wikiContentDir = join(this.wikiDir(wikiId), 'wiki');
+    const target = prefix ? join(wikiContentDir, prefix) : wikiContentDir;
+
+    // Prevent directory traversal
+    if (!target.startsWith(wikiContentDir)) {
+      throw new Error('Invalid path');
+    }
+
+    if (!existsSync(target)) return [];
+
+    const entries = readdirSync(target, { withFileTypes: true });
+    const results: Array<{ path: string; type: 'file' | 'directory' }> = [];
+
+    for (const entry of entries) {
+      if (entry.name.startsWith('.')) continue;
+      const relPath = prefix ? `${prefix}/${entry.name}` : entry.name;
+      results.push({
+        path: relPath,
+        type: entry.isDirectory() ? 'directory' : 'file',
+      });
+    }
+
+    return results.sort((a, b) => {
+      // Directories first, then alphabetical
+      if (a.type !== b.type) return a.type === 'directory' ? -1 : 1;
+      return a.path.localeCompare(b.path);
+    });
+  }
+
+  /**
+   * Read a file from a wiki's wiki/ directory.
+   * Returns the file content as a UTF-8 string.
+   */
+  readWikiFile(wikiId: string, filePath: string): string {
+    const wikiContentDir = join(this.wikiDir(wikiId), 'wiki');
+    const target = join(wikiContentDir, filePath);
+
+    // Prevent directory traversal
+    if (!target.startsWith(wikiContentDir)) {
+      throw new Error('Invalid path');
+    }
+
+    if (!existsSync(target)) {
+      throw new Error(`File not found: ${filePath}`);
+    }
+
+    return readFileSync(target, 'utf-8');
   }
 
   /**

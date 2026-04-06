@@ -57,11 +57,17 @@ export class NamespaceManager {
     // Build a shell script that:
     // 1. Bind-mounts the wiki dir to /workspace
     // 2. Remounts nosuid,nodev
-    // 3. cd into /workspace
-    // 4. exec the inner command
+    // 3. Remounts wiki/raw/ as read-only (immutable source archive)
+    // 4. cd into /workspace
+    // 5. exec the inner command
+    const rawDir = join(wikiDir, 'wiki', 'raw');
+    const rawMount = `${WORKSPACE_MOUNT}/wiki/raw`;
     const script = [
       `mount --bind ${shellEscape(wikiDir)} ${shellEscape(WORKSPACE_MOUNT)}`,
       `mount -o remount,nosuid,nodev ${shellEscape(WORKSPACE_MOUNT)}`,
+      // raw/ is the immutable source archive — Claude can read but never write
+      `mount --bind ${shellEscape(rawDir)} ${shellEscape(rawMount)}`,
+      `mount -o remount,bind,ro ${shellEscape(rawMount)}`,
       `cd ${shellEscape(WORKSPACE_MOUNT)}`,
       `exec ${innerCommand.map(shellEscape).join(' ')}`,
     ].join(' && ');

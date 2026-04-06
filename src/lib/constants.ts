@@ -39,4 +39,4 @@ export const ALLOWED_TOOLS_WHITELIST = new Set([
 
 // ── Validation ───────────────────────────────────────────────────────────────
 
-export const WIKI_ID_PATTERN = /^[a-z0-9][a-z0-9-]{1,62}[a-z0-9]$/;
+export const WIKI_ID_PATTERN = /^[a-zA-Z0-9][a-zA-Z0-9_-]{1,62}[a-zA-Z0-9]$/;

@@ -9,6 +9,13 @@
   "bin": {
     "memex": "./dist/index.js"
   },
+  "exports": {
+    ".": "./dist/index.js",
+    "./client": "./dist/cli/client.js",
+    "./types": "./dist/lib/types.js",
+    "./errors": "./dist/lib/errors.js",
+    "./constants": "./dist/lib/constants.js"
+  },
   "scripts": {
     "install": "node-gyp rebuild",
     "build": "tsc",

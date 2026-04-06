@@ -491,7 +491,7 @@
     "cache": "/home/claude/.npm",
     "npm_version": "10.9.7",
     "prefix": "/home/claude/.nvm/versions/node/v22.22.2",
-    "local_prefix": "/home/claude/projects/memex",
+    "local_prefix": "/home/claude/projects/tacit",
     "userconfig": "/home/claude/.npmrc",
     "user_agent": "npm/10.9.7 node/v22.22.2 linux x64 workspaces/false"
   },

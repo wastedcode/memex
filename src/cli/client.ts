@@ -164,6 +164,15 @@ export class MemexClient {
     return this.request<QueueJob[]>('GET', `/wikis/${wikiId}/jobs`);
   }
 
+  listFiles(wikiId: string, prefix?: string) {
+    const path = `/wikis/${wikiId}/files` + (prefix ? `?prefix=${encodeURIComponent(prefix)}` : '');
+    return this.request<Array<{ path: string; type: 'file' | 'directory' }>>('GET', path);
+  }
+
+  readFile(wikiId: string, filePath: string) {
+    return this.request<{ path: string; content: string }>('GET', `/wikis/${wikiId}/files/${filePath}`);
+  }
+
   getAuditLog(wikiId: string, limit?: number) {
     const path = `/wikis/${wikiId}/logs` + (limit ? `?limit=${limit}` : '');
     return this.request<AuditEntry[]>('GET', path);

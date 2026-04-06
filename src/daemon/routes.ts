@@ -16,6 +16,7 @@ interface RouteContext {
   wait?: boolean;
   res?: ServerResponse;
   callerUid: number;
+  query?: URLSearchParams;
 }
 
 type Route = {
@@ -48,6 +49,8 @@ export class RouteHandler {
       { method: 'GET',    pattern: /^\/wikis\/(?<id>[^/]+)\/jobs$/,         handler: this.listJobs.bind(this) },
       { method: 'GET',    pattern: /^\/wikis\/(?<id>[^/]+)\/logs$/,         handler: this.getAuditLog.bind(this) },
       { method: 'POST',   pattern: /^\/wikis\/(?<id>[^/]+)\/ingest-file$/,  handler: this.receiveFile.bind(this) },
+      { method: 'GET',    pattern: /^\/wikis\/(?<id>[^/]+)\/files$/,        handler: this.listFiles.bind(this) },
+      { method: 'GET',    pattern: /^\/wikis\/(?<id>[^/]+)\/files\/(?<path>.+)$/, handler: this.readFile.bind(this) },
     ];
   }
 
@@ -72,8 +75,8 @@ export class RouteHandler {
 
     if (!id || !WIKI_ID_PATTERN.test(id)) {
       throw new ValidationError(
-        `Invalid wiki ID '${id}'. Must be 3-64 chars, lowercase alphanumeric and hyphens, ` +
-        'cannot start or end with a hyphen.'
+        `Invalid wiki ID '${id}'. Must be 3-64 chars, alphanumeric with hyphens and underscores, ` +
+        'cannot start or end with a hyphen or underscore.'
       );
     }
 
@@ -283,6 +286,26 @@ export class RouteHandler {
     const stored = this.scaffold.writeRawFile(wikiId, filename, buffer);
 
     return { status: 201, body: { ok: true, data: { filename: stored } } };
+  }
+
+  // ── File browsing ────────────────────────────────────────────────────
+
+  private async listFiles(params: Record<string, string>, body: unknown, ctx: RouteContext): Promise<RouteResponse> {
+    const wikiId = params['id']!;
+    this.requireWiki(wikiId, ctx.callerUid);
+
+    const prefix = ctx.query?.get('prefix') ?? '';
+    const files = this.scaffold.listWikiFiles(wikiId, prefix);
+    return { status: 200, body: { ok: true, data: files } };
+  }
+
+  private async readFile(params: Record<string, string>, body: unknown, ctx: RouteContext): Promise<RouteResponse> {
+    const wikiId = params['id']!;
+    this.requireWiki(wikiId, ctx.callerUid);
+
+    const filePath = params['path']!;
+    const content = this.scaffold.readWikiFile(wikiId, filePath);
+    return { status: 200, body: { ok: true, data: { path: filePath, content } } };
   }
 
   // ── Helpers ──────────────────────────────────────────────────────────────

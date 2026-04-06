@@ -30,9 +30,16 @@ Integrate these into the wiki:
    d. Maintain bidirectional links — if you link A→B, update B→A too.
    e. Update _index.md with current summaries for all affected pages.
 6. Append a dated ingest entry to _log.md summarizing what was ingested and what pages were affected.
+7. **Reflect on the schema.** Before finishing, re-read _schema.md and ask yourself:
+   - Have I established patterns that aren't documented? (e.g. bug lifecycle stages, severity conventions, required fields for a category)
+   - Are there recurring structures across pages in the same category? (e.g. all bugs have Status/Reporter/Impact — codify that)
+   - Has my filing behavior drifted from what the schema says? Update the schema to match reality.
+   - Are there cross-category patterns worth noting? (e.g. "bugs should always link to their owning product")
+   - Would a future version of me, seeing this schema for the first time, make the same decisions I just made?
+   The schema is your institutional memory. If you learned something from this ingest — a new convention, a refinement, a pattern — write it down. Vocabulary, heuristics, page templates, lifecycle stages, things to ignore. The schema should get richer with every ingest, not just when new categories appear.
 
 Rules:
-- NEVER modify files in raw/ — they are immutable sources
+- NEVER modify files in raw/ — they are immutable sources (this is enforced by the filesystem)
 - Prefer updating existing pages over creating duplicates
 - If a source contradicts existing wiki content, UPDATE the existing page — resolve or flag the contradiction
 - Keep pages focused — one topic per page

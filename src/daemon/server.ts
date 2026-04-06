@@ -89,6 +89,7 @@ export class DaemonServer {
         wait,
         res, // pass response for streaming login output
         callerUid,
+        query: urlObj.searchParams,
       });
 
       // If the route already handled the response (e.g., streaming), skip

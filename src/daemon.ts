@@ -1,4 +1,4 @@
-import { mkdirSync } from 'node:fs';
+import { mkdirSync, existsSync } from 'node:fs';
 import { Database } from './daemon/db.js';
 import { NamespaceManager } from './daemon/namespace.js';
 import { WikiScaffold } from './daemon/scaffold.js';
@@ -16,8 +16,10 @@ export async function startDaemon(): Promise<void> {
   console.log('[memex] Starting daemon...');
 
   // ── Ensure directories ─────────────────────────────────────────────────
+  // RUN_DIR may be pre-created by systemd (RuntimeDirectory=memex) in a
+  // read-only /run mount (ProtectSystem=strict). Skip mkdir when it exists.
   for (const dir of [DATA_DIR, WIKIS_DIR, RUN_DIR]) {
-    mkdirSync(dir, { recursive: true });
+    if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
   }
 
   // ── Database ───────────────────────────────────────────────────────────

@@ -1,1 +1,0 @@
-cmd_Release/obj.target/peercred.node := g++ -o Release/obj.target/peercred.node -shared -pthread -rdynamic -m64  -Wl,-soname=peercred.node -Wl,--start-group Release/obj.target/peercred/src/daemon/peercred.o -Wl,--end-group 

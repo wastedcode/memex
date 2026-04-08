@@ -4,7 +4,7 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=/usr/local/bin/memex serve
+ExecStart=/usr/bin/node /usr/lib/node_modules/@wastedcode/memex/dist/index.js serve
 Restart=on-failure
 RestartSec=5
 
@@ -16,14 +16,6 @@ StateDirectory=memex
 AmbientCapabilities=CAP_SYS_ADMIN
 NoNewPrivileges=no
 CapabilityBoundingSet=CAP_SYS_ADMIN
-ProtectSystem=strict
-ReadWritePaths=/var/lib/memex /run/memex /workspace
-ProtectHome=yes
-PrivateTmp=yes
-ProtectKernelTunables=yes
-ProtectKernelModules=yes
-ProtectControlGroups=yes
-RestrictSUIDSGID=yes
 
 # Environment
 Environment=NODE_ENV=production

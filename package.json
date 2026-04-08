@@ -48,7 +48,8 @@
   "files": [
     "dist",
     "binding.gyp",
-    "src/daemon/peercred.c"
+    "src/daemon/peercred.c",
+    "systemd"
   ],
   "dependencies": {
     "better-sqlite3": "^12.8.0",

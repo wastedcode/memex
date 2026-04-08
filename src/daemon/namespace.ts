@@ -31,7 +31,7 @@ export class NamespaceManager {
    * Ensure the /workspace mount target exists on the host.
    */
   ensureDirectories(): void {
-    mkdirSync(WORKSPACE_MOUNT, { recursive: true });
+    if (!existsSync(WORKSPACE_MOUNT)) mkdirSync(WORKSPACE_MOUNT, { recursive: true });
   }
 
   /**
